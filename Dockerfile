@@ -1,11 +1,10 @@
-FROM openjdk:11-jre-slim
+FROM eclipse-temurin:11-jre-alpine
 
 # Install necessary tools
-RUN apt-get update && apt-get install -y \
+RUN apk update && apk add --no-cache \
     curl \
     wget \
-    git \
-    && rm -rf /var/lib/apt/lists/*
+    git
 
 # Set working directory
 WORKDIR /app
