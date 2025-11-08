@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: tolgee-backend
+    runtime: node
+    buildCommand: |
+      apt-get update && 
+      apt-get install -y openjdk-11-jdk && 
+      export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64 &&
+      ./gradlew build
+    startCommand: java -jar api/build/libs/api.jar
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: TOLGEE_JWT_SECRET
+        sync: false
+      - key: TOLGEE_FRONTEND_URL
+        fromService:
+          name: tolgee-frontend
+          type: web
+          property: url
+    autoDeploy: true
+    plan: starter
+
+  - type: web
+    name: tolgee-frontend
+    runtime: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    autoDeploy: true
