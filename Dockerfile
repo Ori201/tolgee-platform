@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jdk-alpine
+FROM eclipse-temurin:21-jdk-alpine
 
 # Install necessary tools
 RUN apk update && apk add --no-cache \
@@ -16,7 +16,7 @@ COPY . .
 # Make gradlew executable
 RUN chmod +x ./gradlew
 
-# Build the application without tests (faster)
+# Build the application
 RUN ./gradlew build -x test
 
 # Expose port
