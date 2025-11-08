@@ -1,15 +1,16 @@
-FROM eclipse-temurin:11-jre-alpine
+FROM eclipse-temurin:11-jdk-alpine
 
 # Install necessary tools
 RUN apk update && apk add --no-cache \
     curl \
     wget \
-    git
+    git \
+    bash
 
 # Set working directory
 WORKDIR /app
 
-# Copy everything (this allows you to modify files)
+# Copy everything
 COPY . .
 
 # Make gradlew executable
