@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jdk-alpine
+FROM gradle:8.5-jdk17-alpine
 
 # Install necessary tools
 RUN apk update && apk add --no-cache \
