@@ -1,10 +1,11 @@
-FROM gradle:7.6.4-jdk11-alpine
+FROM eclipse-temurin:17-jdk-alpine
 
 # Install necessary tools
 RUN apk update && apk add --no-cache \
     curl \
     wget \
-    git
+    git \
+    bash
 
 # Set working directory
 WORKDIR /app
