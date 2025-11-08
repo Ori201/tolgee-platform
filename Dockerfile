@@ -1,11 +1,13 @@
 FROM eclipse-temurin:21-jdk-alpine
 
-# Install necessary tools
+# Install necessary tools including Node.js and npm
 RUN apk update && apk add --no-cache \
     curl \
     wget \
     git \
-    bash
+    bash \
+    nodejs \
+    npm
 
 # Set working directory
 WORKDIR /app
