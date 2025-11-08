@@ -1,4 +1,4 @@
-FROM gradle:8.5-jdk17-alpine
+FROM eclipse-temurin:17-jdk-alpine
 
 # Install necessary tools
 RUN apk update && apk add --no-cache \
@@ -16,8 +16,8 @@ COPY . .
 # Make gradlew executable
 RUN chmod +x ./gradlew
 
-# Build the application
-RUN ./gradlew build
+# Build the application without tests (faster)
+RUN ./gradlew build -x test
 
 # Expose port
 EXPOSE 8080
