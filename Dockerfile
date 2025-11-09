@@ -7,7 +7,9 @@ WORKDIR /workspace
 COPY . .
 
 # Build only the server app bootJar (skip tests for faster builds)
-RUN gradle :server-app:bootJar -x test --no-daemon
+# Limit Gradle/JVM memory and parallelism so the build fits into Render build RAM limits
+RUN GRADLE_OPTS="-Xmx2g -Dfile.encoding=UTF-8" \
+	gradle :server-app:bootJar -x test --no-daemon --no-parallel --max-workers=1
 
 ## Stage 2: runtime image
 FROM eclipse-temurin:21-jre-jammy
