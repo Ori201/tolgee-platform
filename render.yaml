@@ -1,3 +1,8 @@
+databases:
+  - name: tolgee-db
+    plan: free
+    type: postgres
+
 services:
   - type: web
     name: tolgee-backend
@@ -5,19 +10,39 @@ services:
     runtime: docker
     dockerfilePath: Dockerfile
     envVars:
+      # Database connection injected from Render-managed Postgres
+      - key: spring.datasource.url
+        fromDatabase:
+          name: tolgee-db
+          property: connectionString
+      - key: spring.datasource.username
+        fromDatabase:
+          name: tolgee-db
+          property: user
+      - key: spring.datasource.password
+        fromDatabase:
+          name: tolgee-db
+          property: password
+      # Disable application-side Docker/Postgres autostart (Tolgee setting)
+      - key: tolgee.postgres-autostart.enabled
+        value: "false"
       - key: SPRING_PROFILES_ACTIVE
         value: prod
       - key: TOLGEE_JWT_SECRET
         sync: false
-      # Render does not provide a 'url' property mapping here; set the frontend URL manually
+      # Set frontend URL (replace with your frontend URL or set in Render dashboard)
       - key: TOLGEE_FRONTEND_URL
-        value: "https://your-frontend-url/"
+        value: "https://tolgee-frontend-sfnx.onrender.com/"
     autoDeploy: true
     plan: free
 
   - type: web
     name: tolgee-frontend
     runtime: static
-    buildCommand: npm install && npm run build
-    staticPublishPath: dist
+    # Build in webapp subfolder where the frontend package.json is located
+    buildCommand: |
+      cd webapp && \
+      npm ci && \
+      npm run build
+    staticPublishPath: webapp/dist
     autoDeploy: true
