@@ -7,7 +7,7 @@ RUN apk update && apk add --no-cache \
     git \
     bash
 
-# Set working directory
+# Set working directory  
 WORKDIR /app
 
 # Copy everything
@@ -16,21 +16,24 @@ COPY . .
 # Make gradlew executable
 RUN chmod +x ./gradlew
 
-# Build the API module properly
-RUN ./gradlew :api:build -x test
+# Build executable JAR using bootJar task
+RUN ./gradlew :backend:api:bootJar -x test || \
+    ./gradlew :api:bootJar -x test || \
+    ./gradlew bootJar -x test
 
-# Debug: Show directory structure
-RUN echo "=== Directory structure ===" && \
-    find . -name "build" -type d && \
-    echo "=== JAR files ===" && \
-    find . -name "*.jar" -type f
+# Debug: Show what was built
+RUN echo \"=== Looking for executable JARs ===\" && \
+    find . -name \"*.jar\" -type f | head -10
 
 # Expose port
 EXPOSE 8080
 
-# Run the application with correct path
-CMD ["sh", "-c", "\
-    cd backend && \
-    java -cp \\\"api/build/libs/*:api/build/libs/*.jar:lib/*\\\" \\
-    -Dloader.path=api/build/libs/,api/build/libs/*.jar \\
-    org.springframework.boot.loader.PropertiesLauncher"]
+# Run the application
+CMD [\"sh\", \"-c\", \"\
+    JAR_FILE=\\$(find . -name '*.jar' -type f | grep -E '(api|server|boot)' | head -1); \
+    if [ -z \\\"\\$JAR_FILE\\\" ]; then \
+        JAR_FILE=\\$(find . -name '*.jar' -type f | head -1); \
+    fi; \
+    echo \\\"Running JAR: \\$JAR_FILE\\\"; \
+    java -jar \\\"\\$JAR_FILE\\\"\"
+]
