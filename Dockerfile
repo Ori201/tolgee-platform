@@ -7,7 +7,7 @@ RUN apk update && apk add --no-cache \
     git \
     bash
 
-# Set working directory  
+# Set working directory
 WORKDIR /app
 
 # Copy everything
@@ -16,24 +16,21 @@ COPY . .
 # Make gradlew executable
 RUN chmod +x ./gradlew
 
-# Build executable JAR using bootJar task
-RUN ./gradlew :backend:api:bootJar -x test || \
-    ./gradlew :api:bootJar -x test || \
-    ./gradlew bootJar -x test
-
-# Debug: Show what was built
-RUN echo \"=== Looking for executable JARs ===\" && \
-    find . -name \"*.jar\" -type f | head -10
+# Build only the API module (backend only)
+RUN ./gradlew :api:build -x test
 
 # Expose port
 EXPOSE 8080
 
-# Run the application
-CMD [\"sh\", \"-c\", \"\
-    JAR_FILE=\\$(find . -name '*.jar' -type f | grep -E '(api|server|boot)' | head -1); \
-    if [ -z \\\"\\$JAR_FILE\\\" ]; then \
-        JAR_FILE=\\$(find . -name '*.jar' -type f | head -1); \
-    fi; \
-    echo \\\"Running JAR: \\$JAR_FILE\\\"; \
-    java -jar \\\"\\$JAR_FILE\\\"\"
-]
+# Run the application directly
+CMD ["sh", "-c", "\
+    echo 'Starting Tolgee backend...'; \
+    if [ -f 'backend/api/build/libs/api.jar' ]; then \
+        echo 'Running backend/api/build/libs/api.jar'; \
+        java -jar backend/api/build/libs/api.jar; \
+    else \
+        echo 'JAR file not found!'; \
+        find . -name '*.jar' -type f; \
+        exit 1; \
+    fi \
+"]
