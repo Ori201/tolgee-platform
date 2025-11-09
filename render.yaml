@@ -34,7 +34,7 @@ services:
       # Set frontend URL (replace with your frontend URL or set in Render dashboard)
       - key: TOLGEE_FRONTEND_URL
         value: "https://tolgee-frontend-sfnx.onrender.com/"
-      # Memory and JVM optimization
+      # Memory and JVM optimization 
       - key: JAVA_OPTS
         value: "-Xmx450m -Xms450m -XX:MaxMetaspaceSize=120m -XX:+UseG1GC -XX:+UseStringDeduplication -XX:+UseCompressedOops"
       # Hibernate/JPA optimization
