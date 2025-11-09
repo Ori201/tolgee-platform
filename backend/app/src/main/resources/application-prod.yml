@@ -1,0 +1,14 @@
+# Production profile configuration
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+
+# Disable Postgres autostart features since we're using external DB
+tolgee:
+  postgres-autostart:
+    enabled: false
+  # Disable any other autostart/Docker features
+  internal-postgres:
+    enabled: false
+  automations:
+    enabled: false  # Disable automation features that might try to use Docker
