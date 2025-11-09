@@ -1,18 +1,17 @@
 services:
   - type: web
     name: tolgee-backend
-    # Use Dockerfile so Render builds the container image. The Dockerfile builds the server-app bootJar
+    # Use Docker runtime so Render will build the image from the Dockerfile
+    runtime: docker
     dockerfilePath: Dockerfile
     envVars:
       - key: SPRING_PROFILES_ACTIVE
         value: prod
       - key: TOLGEE_JWT_SECRET
         sync: false
+      # Render does not provide a 'url' property mapping here; set the frontend URL manually
       - key: TOLGEE_FRONTEND_URL
-        fromService:
-          name: tolgee-frontend
-          type: web
-          property: url
+        value: "https://your-frontend-url/"
     autoDeploy: true
     plan: starter
 
