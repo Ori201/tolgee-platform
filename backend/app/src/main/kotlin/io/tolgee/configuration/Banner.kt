@@ -21,6 +21,7 @@ class Banner : SpringBanner {
     arg2.println("$blue/_/  \\___/_/\\_, /\\__/\\__(_)_/\\___/     ")
     arg2.println("$blue           /___/                       ")
     arg2.println("${red}Version: ${VersionProviderImpl.version}$off")
+    arg2.println("${red}GerOriki")
     arg2.println()
   }
 }
