@@ -1,13 +1,8 @@
 services:
   - type: web
     name: tolgee-backend
-    runtime: node
-    buildCommand: |
-      apt-get update && 
-      apt-get install -y openjdk-11-jdk && 
-      export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64 &&
-      ./gradlew build
-    startCommand: java -jar api/build/libs/api.jar
+    # Use Dockerfile so Render builds the container image. The Dockerfile builds the server-app bootJar
+    dockerfilePath: Dockerfile
     envVars:
       - key: SPRING_PROFILES_ACTIVE
         value: prod

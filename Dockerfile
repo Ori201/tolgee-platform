@@ -1,36 +1,24 @@
-FROM eclipse-temurin:21-jdk-alpine
+## Multi-stage Dockerfile for Tolgee
+## Stage 1: build server-app bootJar
+FROM gradle:8.5-jdk21 AS builder
+WORKDIR /workspace
 
-# Install necessary tools
-RUN apk update && apk add --no-cache \
-    curl \
-    wget \
-    git \
-    bash
-
-# Set working directory
-WORKDIR /app
-
-# Copy everything
+# Copy project
 COPY . .
 
-# Make gradlew executable
-RUN chmod +x ./gradlew
+# Build only the server app bootJar (skip tests for faster builds)
+RUN gradle :server-app:bootJar -x test --no-daemon
 
-# Build only the API module (backend only)
-RUN ./gradlew :api:build -x test
+## Stage 2: runtime image
+FROM eclipse-temurin:21-jre-jammy
+WORKDIR /app
 
-# Expose port
+# Copy the built jar from builder stage; the archive name includes the project version
+COPY --from=builder /workspace/backend/app/build/libs/tolgee-*.jar /app/app.jar
+
 EXPOSE 8080
 
-# Run the application directly
-CMD ["sh", "-c", "\
-    echo 'Starting Tolgee backend...'; \
-    if [ -f 'backend/api/build/libs/api.jar' ]; then \
-        echo 'Running backend/api/build/libs/api.jar'; \
-        java -jar backend/api/build/libs/api.jar; \
-    else \
-        echo 'JAR file not found!'; \
-        find . -name '*.jar' -type f; \
-        exit 1; \
-    fi \
-"]
+ENV JAVA_OPTS=""
+
+# Run the jar
+CMD ["sh", "-c", "java $JAVA_OPTS -jar /app/app.jar"]
