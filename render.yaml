@@ -34,6 +34,21 @@ services:
       # Set frontend URL (replace with your frontend URL or set in Render dashboard)
       - key: TOLGEE_FRONTEND_URL
         value: "https://tolgee-frontend-sfnx.onrender.com/"
+      # Memory and JVM optimization
+      - key: JAVA_OPTS
+        value: "-Xmx450m -Xms450m -XX:MaxMetaspaceSize=120m -XX:+UseG1GC -XX:+UseStringDeduplication -XX:+UseCompressedOops"
+      # Hibernate/JPA optimization
+      - key: SPRING_JPA_PROPERTIES_HIBERNATE_GENERATE_STATISTICS
+        value: "false"
+      - key: SPRING_JPA_PROPERTIES_HIBERNATE_JDBC_BATCH_SIZE
+        value: "25"
+      - key: SPRING_DATA_JPA_REPOSITORIES_BOOTSTRAP_MODE
+        value: "deferred"
+      # Port configuration
+      - key: PORT
+        value: "8080"
+      - key: SERVER_PORT
+        value: "8080"
     autoDeploy: true
     plan: free
 
