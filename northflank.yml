@@ -1,0 +1,45 @@
+services:
+  - name: tolgee-backend
+    type: service
+    instances: 1
+    buildCommand: ./gradlew clean :backend:app:bootJar
+    startCommand: java $JAVA_OPTS -jar backend/app/build/libs/*.jar
+    ports:
+      - port: 8080
+        protocol: HTTP
+    resources:
+      cpu: 0.5
+      memory: 512
+    env:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: JAVA_OPTS
+        value: "-Xmx450m -Xms450m -XX:MaxMetaspaceSize=120m -XX:+UseG1GC -XX:+UseStringDeduplication -XX:+UseCompressedOops"
+      - key: SPRING_JPA_PROPERTIES_HIBERNATE_GENERATE_STATISTICS
+        value: "false"
+      - key: SPRING_JPA_PROPERTIES_HIBERNATE_JDBC_BATCH_SIZE
+        value: "25"
+      - key: SPRING_DATA_JPA_REPOSITORIES_BOOTSTRAP_MODE
+        value: "deferred"
+      - key: tolgee.postgres-autostart.enabled
+        value: "false"
+      # Database configuration - set these in Northflank dashboard
+      - key: SPRING_DATASOURCE_URL
+        value: "${DATABASE_URL}" # Will be replaced by Northflank
+      - key: SPRING_DATASOURCE_USERNAME
+        secret: true
+      - key: SPRING_DATASOURCE_PASSWORD
+        secret: true
+      - key: TOLGEE_JWT_SECRET
+        secret: true
+
+  - name: tolgee-frontend
+    type: static
+    buildCommand: |
+      cd webapp && \
+      npm ci && \
+      npm run build
+    staticPath: webapp/dist
+    env:
+      - key: TOLGEE_API_URL
+        value: "${TOLGEE_BACKEND_URL}" # Will be set to backend service URL

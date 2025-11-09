@@ -1,0 +1,1 @@
+web: java $JAVA_OPTS -jar backend/app/build/libs/*.jar --server.port=$PORT
