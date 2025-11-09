@@ -22,7 +22,8 @@ services:
         value: "<DB_USER>"
       - key: SPRING_DATASOURCE_PASSWORD
         sync: false
-        value: "<DB_PASSWORD>"
+        # Do NOT store the password value in this file. Set the secret value
+        # in the Render dashboard for the `tolgee-backend` service instead.
       # Disable application-side Docker/Postgres autostart (Tolgee setting)
       - key: tolgee.postgres-autostart.enabled
         value: "false"
