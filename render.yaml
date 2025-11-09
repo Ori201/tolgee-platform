@@ -1,7 +1,8 @@
 databases:
   - name: tolgee-db
     plan: free
-    type: postgres
+    # Render expects 'postgresql' as the database type
+    type: postgresql
 
 services:
   - type: web
@@ -10,19 +11,15 @@ services:
     runtime: docker
     dockerfilePath: Dockerfile
     envVars:
-      # Database connection injected from Render-managed Postgres
+      # Database connection injected from Render-managed Postgres.
+      # Use only the connectionString mapping because Render's YAML 'fromDatabase' supports
+      # 'connectionString', 'host', 'hostport' and 'port'. If the connectionString doesn't
+      # include credentials, set SPRING_DATASOURCE_USERNAME and SPRING_DATASOURCE_PASSWORD
+      # manually in the Render dashboard or in this YAML as plain values.
       - key: spring.datasource.url
         fromDatabase:
           name: tolgee-db
           property: connectionString
-      - key: spring.datasource.username
-        fromDatabase:
-          name: tolgee-db
-          property: user
-      - key: spring.datasource.password
-        fromDatabase:
-          name: tolgee-db
-          property: password
       # Disable application-side Docker/Postgres autostart (Tolgee setting)
       - key: tolgee.postgres-autostart.enabled
         value: "false"
