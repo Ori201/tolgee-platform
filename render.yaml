@@ -13,7 +13,7 @@ services:
       - key: TOLGEE_FRONTEND_URL
         value: "https://your-frontend-url/"
     autoDeploy: true
-    plan: starter
+    plan: free
 
   - type: web
     name: tolgee-frontend
