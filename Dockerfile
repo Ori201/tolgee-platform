@@ -1,25 +1,23 @@
 FROM eclipse-temurin:21-jdk-alpine
 
-# Install necessary tools including Node.js and npm
+# Install necessary tools
 RUN apk update && apk add --no-cache \
     curl \
     wget \
     git \
-    bash \
-    nodejs \
-    npm
+    bash
 
 # Set working directory
 WORKDIR /app
 
-# Copy everything
+# Copy everything (this preserves .git folder)
 COPY . .
 
 # Make gradlew executable
 RUN chmod +x ./gradlew
 
-# Build the application
-RUN ./gradlew build -x test
+# Build only the API module (backend only, skip frontend)
+RUN ./gradlew :api:build -x test
 
 # Expose port
 EXPOSE 8080
